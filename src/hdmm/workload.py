@@ -235,6 +235,7 @@ class Marginal(Kronecker):
         self._axes = tuple(i for i in range(len(binary)) if binary[i] == 0)
         subs = []
         for i,n in enumerate(domain):
+            #selection on (1,0000,1 ) based on different 
             if binary[i] == 0:
                 subs.append(Total(n))
             else:
@@ -267,6 +268,7 @@ class Marginal(Kronecker):
         return tuple(i for i in range(d) if binary[i] == 1)
 
     @staticmethod
+    # encode the binary to key 
     def frombinary(domain, binary):
         d = len(domain)
         key = sum(binary[k]*2**(d-k-1) for k in range(d))
@@ -529,7 +531,7 @@ def RandomRange(shape_list, domain, size, seed=9001):
         queries.append( (lb, ub) )
 
     return RangeQueries.fromlist(domain, queries) 
-
+#(domain (100,100,100,99.....),dims[0,1,2,3])
 def DimKMarginals(domain, dims):
     if type(dims) is int:
         dims = [dims]

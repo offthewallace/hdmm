@@ -99,6 +99,7 @@ if False:
 
     for n in [2,4,8,16,32,64,128,256,512,1024]:
         domain = [n,n,n,n,n]
+        #TODO change the work load to marginals like compute strategies with conresponding ns for three experiments in Figure3 
         R = workload.AllRange(n)
         K = workload.Kronecker([R,R,R,R,R])
         W = workload.VStack([K]*10)

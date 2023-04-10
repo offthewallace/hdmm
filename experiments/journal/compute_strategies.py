@@ -20,10 +20,10 @@ def default_params():
     :returns: a dictionary of default parameter settings for each command line argument
     """
     params = {}
-    params['approx'] = 'False'
-    params['dataset'] = 'census'
+    params['approx'] = 'True'
+    params['dataset'] = 'adult'
     params['workload'] = 1
-    params['output'] = 'hderror.csv'
+    params['output'] = 'hderror_2023_04_10.csv'
 
     return params
 
@@ -44,17 +44,17 @@ if __name__ == '__main__':
     W = benchmarks.get_workload(args.dataset, args.workload)
     ns = get_domain(W)
 
-    temp1 = templates.DefaultKron(ns, approx)
-    temp2 = templates.DefaultUnionKron(ns, len(W.matrices), approx)
+    #temp1 = templates.DefaultKron(ns, approx)
+    #temp2 = templates.DefaultUnionKron(ns, len(W.matrices), approx)
     temp3 = templates.Marginals(ns, approx)
 
-    loss1 = temp1.optimize(W)
-    loss2 = temp2.optimize(W)
+    #loss1 = temp1.optimize(W)
+    #loss2 = temp2.optimize(W)
     loss3 = temp3.optimize(W)
 
     losses = {}
-    losses['kron'] = np.sqrt(loss1 / W.shape[0])
-    losses['union'] = np.sqrt(loss2 / W.shape[0])
+    #losses['kron'] = np.sqrt(loss1 / W.shape[0])
+    #losses['union'] = np.sqrt(loss2 / W.shape[0])
     losses['marg'] = np.sqrt(loss3 / W.shape[0])
 
     if args.output is not None:
