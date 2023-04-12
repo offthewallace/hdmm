@@ -10,7 +10,7 @@ def fake_optimize(temp, W):
     for i in range(100):
         temp._loss_and_grad(params)
 
-if True:
+if False:
     with open('scalability_ls_0410.csv', 'w') as f:
         f.write('n,Kronecker,Marginals\n')
 
@@ -52,7 +52,7 @@ if True:
         A1 = AtA1 @ At
         A1.dot(y)
         t3 = time.time()
-        with open('scalability_ls_0410.csv' 'a') as f:
+        with open('scalability_ls_0410.csv','a') as f:
             line = '%d, %.6f, %.6f' % (n, t1-t0, t3-t2)
             print(line)
             f.write(line+'\n')
@@ -124,7 +124,7 @@ if True:
         loss = temp4.optimize(W1, iters=100)
         t4 = time.time()
         lossout = np.sqrt(loss / W1.shape[0])
-        with open('scalability_5d.csv', 'a') as f:
+        with open('scalability_5d_0410.csv', 'a') as f:
             line = '%d, %.6f, %.6f, %.6f,%.6f,%.6f' % (n, t1-t0, t2-t1, t3-t2,t4-t3,lossout)
             print(line)
             f.write(line + '\n')
@@ -161,4 +161,3 @@ if True:
             print(line)
             f.write(line + '\n')
 
-   
