@@ -46,7 +46,8 @@ def calculate_V(A, W):
 
 def calculate_V_v2(A, W):
     # written in pure numpy to verify the result
-    A1 = np.linalg.pinv(A)
+    A1 = np.linalg.pinv(A.dense_matrix())
+    W=W.dense_matrix()
     product = np.matmul(W, A1)
     transpose_matrix = product.T
     v = np.matmul(product, transpose_matrix)
