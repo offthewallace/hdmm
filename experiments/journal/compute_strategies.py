@@ -6,7 +6,10 @@ import benchmarks
 import pickle
 import os
 import time
-
+from scipy.sparse.linalg import LinearOperator, eigs
+from hdmm.matrix import Identity
+import scipy.sparse.linalg as linalg
+import math 
 
 def get_domain(W):
     if isinstance(W, workload.VStack):
@@ -29,8 +32,32 @@ def default_params():
 
     return params
 
+import math
+import numpy as np
+import time
+import concurrent.futures
 
+def calculate_vmax(i, P):
+    temp=np.zeros(P.shape[0])
+    temp[i]=1.0
+    print(i)
+    v = P @ temp
+    if v[i]>vmax:
+        vmax=v[i]
+    del temp
+    del v
+    
+    return vmax
 
+def getmaxDiag(P):
+    vmax=-math.inf
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(calculate_vmax, i, P) for i in range(P.shape[0])]
+        for future in concurrent.futures.as_completed(futures):
+            result = future.result()
+            if result > vmax:
+                vmax = result
+    return vmax
 
 
 def calculate_V(A, W):
@@ -44,10 +71,13 @@ def calculate_V(A, W):
     inverse_matrix = product.T
     #(WA'(WA')T)
     product_result = product.dot(inverse_matrix)
-    diag_vec = np.ones(product_result.shape[0])
-    v = product_result @ diag_vec
+    #time1 = time.time()
+    #v_result=getmaxDiag(product_result)
+    #time2=
+    #v = product_result @ diag_vec
     #v = product_result.diag()
-    return v.max()
+    tempreturn=0
+    return tempreturn
 
 
 def calculate_V_v2(A, W):
@@ -92,6 +122,8 @@ if __name__ == '__main__':
     loss3 = temp3.optimize(W)
     # W and A are same class from
     A = temp3.strategy()
+    #OOM example 
+    A.gram().matrices[0].matrix()
     v = calculate_V(A,W)
     #A_matrix=A.dense_matrix()
     #W_matrix=W.dense_matrix()
