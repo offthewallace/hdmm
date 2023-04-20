@@ -23,11 +23,40 @@ def default_params():
     """
     params = {}
     params['approx'] = 'True'
-    params['dataset'] = 'adult'
+    params['dataset'] = 'cps'
     params['workload'] = 1
     params['output'] = 'hderror_2023_04_12.csv'
 
     return params
+
+
+
+
+
+def calculate_V(A, W):
+    # using matrix.py's implementation but dont know if the __mul__ is correct
+    # TOFO: make sure it run into the right __mul__ function
+    A1 = A.pinv()
+    product = W * A1
+    inverse_matrix = product.T
+    product_result = product * inverse_matrix
+    v = product_result.diag().max()
+    return v
+
+
+def calculate_V_v2(A, W):
+    # written in pure numpy to verify the result
+    A1 = np.linalg.pinv(A)
+    product = np.matmul(W, A1)
+    transpose_matrix = product.T
+    v = np.matmul(product, transpose_matrix)
+    v = np.diag(v).max()
+    return v
+
+
+
+
+
 
 if __name__ == '__main__':
     description = ''
@@ -54,6 +83,11 @@ if __name__ == '__main__':
     #loss1 = temp1.optimize(W)
     #loss2 = temp2.optimize(W)
     loss3 = temp3.optimize(W)
+    # W and A are same class from
+    A = temp3.strategy()
+    v = calculate_V(A,W)
+    #A_matrix=A.dense_matrix()
+    #W_matrix=W.dense_matrix()
     t1 = time.time()
 
     losses = {}
