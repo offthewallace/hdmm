@@ -25,7 +25,7 @@ def default_params():
     params['approx'] = 'True'
     params['dataset'] = 'cps'
     params['workload'] = 1
-    params['output'] = 'hderror_2023_04_12.csv'
+    params['output'] = 'hderror_2023_04_20.csv'
 
     return params
 
@@ -35,13 +35,19 @@ def default_params():
 
 def calculate_V(A, W):
     # using matrix.py's implementation but dont know if the __mul__ is correct
-    # TOFO: make sure it run into the right __mul__ function
+    # TODO: make sure it run into the right __mul__ function
+    #A psedo inverse
     A1 = A.pinv()
-    product = W * A1
+    #WA's psedo inverse
+    product = W.dot(A1)
+    #(WA')T
     inverse_matrix = product.T
-    product_result = product * inverse_matrix
-    v = product_result.diag().max()
-    return v
+    #(WA'(WA')T)
+    product_result = product.dot(inverse_matrix)
+    diag_vec = np.ones(product_result.shape[0])
+    v = product_result @ diag_vec
+    #v = product_result.diag()
+    return v.max()
 
 
 def calculate_V_v2(A, W):
@@ -101,5 +107,5 @@ if __name__ == '__main__':
     if args.output is not None:
         with open(args.output, 'a') as f:
             for param in losses.keys():
-                key = (args.dataset, args.workload, approx, param, losses[param],t1-t0)
-                f.write('%s, %d, %s, %s, %.4f,%.6f\n' % key)
+                key = (args.dataset, args.workload, approx, param, losses[param],t1-t0,v)
+                f.write('%s, %d, %s, %s, %.4f,%.6f,%.6f\n' % key)
