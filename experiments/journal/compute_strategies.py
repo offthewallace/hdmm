@@ -6,10 +6,11 @@ import benchmarks
 import pickle
 import os
 import time
-from scipy.sparse.linalg import LinearOperator, eigs
+from scipy.sparse.linalg import LinearOperator, eigs,svds
 from hdmm.matrix import Identity
-import scipy.sparse.linalg as linalg
+from scipy.sparse import coo_matrix
 import math 
+from hdmm.error import per_query_error
 
 def get_domain(W):
     if isinstance(W, workload.VStack):
@@ -66,16 +67,16 @@ def calculate_V(A, W):
     #A psedo inverse
     A1 = A.pinv()
     #WA's psedo inverse
-    product = W.dot(A1)
+    product = W @ A1
     #(WA')T
     inverse_matrix = product.T
     #(WA'(WA')T)
-    product_result = product.dot(inverse_matrix)
+    product_result = product@inverse_matrix
     #time1 = time.time()
     #v_result=getmaxDiag(product_result)
     #time2=
     #v = product_result @ diag_vec
-    #v = product_result.diag()
+    v = product_result.diag()
     tempreturn=0
     return tempreturn
 
@@ -122,8 +123,12 @@ if __name__ == '__main__':
     loss3 = temp3.optimize(W)
     # W and A are same class from
     A = temp3.strategy()
-    #OOM example 
-    A.gram().matrices[0].matrix()
+    ans1=per_query_error(W,A)
+
+
+
+    #OOM example
+    #A.gram().matrices[0].matrix()
     v = calculate_V(A,W)
     #A_matrix=A.dense_matrix()
     #W_matrix=W.dense_matrix()
