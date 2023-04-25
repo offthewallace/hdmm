@@ -72,6 +72,19 @@ def cps():
 
     return V([W1]), V([W2])
 
+def cps_marginal():
+    P = workload.Prefix
+    M = workload.IdentityTotal
+    V = workload.VStack
+    ns = (50,100,7,4,2)
+    W1 = workload.DimKMarginals(ns, [0,1,2,3,4,5])
+
+    W2 = workload.Kronecker([M(50), M(100), M(7), M(4), M(2)])
+    W3 = workload.Kronecker([P(50), P(100), M(7), M(4), M(2)])
+
+    return W1,V([W2]), V([W3])
+
+
 def adult():
     R = workload.AllRange
     P = workload.Prefix

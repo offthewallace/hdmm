@@ -10,7 +10,7 @@ from scipy.sparse.linalg import LinearOperator, eigs,svds
 from hdmm.matrix import Identity
 from scipy.sparse import coo_matrix
 import math 
-from hdmm.error import per_query_error
+from hdmm.error import per_query_error,per_query_error_sampling2
 
 def get_domain(W):
     if isinstance(W, workload.VStack):
@@ -27,9 +27,9 @@ def default_params():
     """
     params = {}
     params['approx'] = 'True'
-    params['dataset'] = 'cps'
+    params['dataset'] = 'loans'
     params['workload'] = 1
-    params['output'] = 'hderror_2023_04_20.csv'
+    params['output'] = 'hderror_2023_04_25_loans.csv'
 
     return params
 
@@ -123,20 +123,15 @@ if __name__ == '__main__':
     loss3 = temp3.optimize(W)
     # W and A are same class from
     A = temp3.strategy()
-    ans1=per_query_error(W,A)
 
 
 
-    #OOM example
-    #A.gram().matrices[0].matrix()
-    v = calculate_V(A,W)
-    #A_matrix=A.dense_matrix()
-    #W_matrix=W.dense_matrix()
+    #the calculation of v is used function per_query_error_sampling2 from HDMM/error.py
+    v = per_query_error_sampling2(W,A)
+ 
     t1 = time.time()
 
     losses = {}
-    #losses['kron'] = np.sqrt(loss1 / W.shape[0])
-    #losses['union'] = np.sqrt(loss2 / W.shape[0])
     losses['marg'] = np.sqrt(loss3 / W.shape[0])
     line = ' %.6f, %.6f' % (t1-t0,losses['marg'])
     print(line)
@@ -144,5 +139,5 @@ if __name__ == '__main__':
     if args.output is not None:
         with open(args.output, 'a') as f:
             for param in losses.keys():
-                key = (args.dataset, args.workload, approx, param, losses[param],t1-t0,v)
+                key = (args.dataset, args.workload, approx, param, losses[param],t1-t0,v.min())
                 f.write('%s, %d, %s, %s, %.4f,%.6f,%.6f\n' % key)

@@ -13,7 +13,7 @@ from scipy.sparse.linalg import LinearOperator, eigs,svds
 from hdmm.matrix import Identity
 from scipy.sparse import coo_matrix
 import math 
-from hdmm.error import per_query_error
+from hdmm.error import per_query_error,per_query_error2,per_query_error_sampling2
 
 
 def calculate_V(A, W):
@@ -51,7 +51,7 @@ def getratio(fileName,dims=[0,1,2,3]):
     #with open(fileName, 'w') as f:
     #    f.write('n,Kronecker,Marginals,Marginaloss\n')
 
-    for n in [8,16,32,64]:
+    for n in [2,4,8,16,32,64,128]:
        
         ns=tuple([n]*5)
         W = workload.DimKMarginals(ns, dims)
@@ -74,12 +74,15 @@ def getratio(fileName,dims=[0,1,2,3]):
         #A1 = AtA1 @ At
         #A1.dot(y)
         #t3 = time.time()
-        v=calculate_V_v2(A,W)
+        #v1=calculate_V_v2(A, W)
+        #v2=per_query_error2(W,A)
+        v=per_query_error_sampling2(W,A)
+        #print(v)
         lossout = np.sqrt(loss / W.shape[0])
         with open(fileName,'a') as f:
-            line = '%d, %.6f, %.6f' % (n, v,lossout)
+            line = '%d, %.6f, %.6f' % (n, v.min(),lossout)
             print(line)
             f.write(line+'\n')
 
 if __name__ == '__main__':
-    getratio("ratio_0421.csv")
+    getratio("ratio_0424_2.csv")
