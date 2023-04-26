@@ -1,19 +1,43 @@
+from hdmm import workload, templates
+import time
 import numpy as np
-from scipy.sparse.linalg import LinearOperator, eigs
+from IPython import embed
+import gc
+import argparse
+import numpy as np
+import benchmarks
+import pickle
+import os
+import time
+from scipy.sparse.linalg import LinearOperator, eigs,svds
+from hdmm.matrix import Identity
+from scipy.sparse import coo_matrix
+import math 
+from calculate_variance import calculate_variance, calculate_variance_marginal,expected_error
 
-# create a 3x3 _ProductLinearOperator object
-A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-eigenvalues, eigenvectors = np.linalg.eig(A)
+def getratio(fileName,dims=[0,1,2,3]):
 
-# sort eigenvalues in descending order
-idx = eigenvalues.argsort()[::-1]
-eigenvalues = eigenvalues[idx]
-eigenvectors = eigenvectors[:, idx]
+    for n in [2,4,8,16,32,64,128]:
+        domain = [n,n,n,n,n]
+        ns=tuple(domain)
+       
+        W = workload.DimKMarginals(ns, dims)
+        #temp = templates.Marginals([n]*5)
+        temp = templates.Marginals(ns, True)
 
-# create diagonal matrix
-D = np.diag(eigenvalues)
+        loss=temp.optimize(W)
+        A = temp.strategy()
+        #A.weights = A.weights.astype(np.float32)
+        #A.dtype = np.float32
+        #v1=calculate_variance(W,A)
+  
+        v =calculate_variance_marginal(W,A)
+        v2=calculate_variance(W,A)
+        lossout = np.sqrt(loss / W.shape[0])
+        with open(fileName,'a') as f:
+            line = '%d, %.6f, %.6f' % (n, v.min(),lossout)
+            print(line)
+            f.write(line+'\n')
 
-# extract diagonal
-diag = np.diagonal(D)
-
-print(diag)
+if __name__ == '__main__':
+    getratio("ratio_0424_2.csv")
