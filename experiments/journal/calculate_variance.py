@@ -165,15 +165,16 @@ def calculate_variance_marginal(W, A):
     """
     # note: this only works for Kronecker or explicit strategy
     W, A = convert_implicit(W), convert_implicit(A)
-    if isinstance(W, Weighted):
-        ans = W.weight**2 * calculate_variance_marginal(W.base, A)
-
-    elif isinstance(W, VStack):
-        #WHY? 
-        m = W.shape[0]
+    #Step 1 W==Vstack ( Marginal )
+    if isinstance(W, VStack):
         samples = [calculate_variance_marginal(Wi, A) for Wi in W.matrices]
         ans = samples
-   
+    
+    #Step 2 W' == W.matrices
+    elif isinstance(W, Weighted):
+        ans = W.weight**2 * calculate_variance_marginal(W.base, A)
+
+    #Step 3 W''== W'.base and W'' is all constructed by Identity and Ones
     elif isinstance(W, Kronecker) and isinstance(A, workload.Marginals):
         # optimization: if W is Marginals, all errors are the same
         if all( type(Wi) in [workload.Identity, workload.Ones] for Wi in W.matrices ):

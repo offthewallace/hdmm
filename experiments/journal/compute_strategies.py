@@ -29,7 +29,7 @@ def default_params():
     params['approx'] = 'True'
     params['dataset'] = 'loans'
     params['workload'] = 1
-    params['output'] = 'hderror_2023_04_27_loans.csv'
+    params['output'] = 'hderror_2023_04_27.csv'
 
     return params
 
