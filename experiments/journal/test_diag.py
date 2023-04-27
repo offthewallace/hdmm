@@ -17,7 +17,7 @@ from calculate_variance import calculate_variance, calculate_variance_marginal,e
 
 def getratio(fileName,dims=[0,1,2,3]):
 
-    for n in [2,4,8,16,32,64,128]:
+    for n in [4,8,16,32,64,128]:
         domain = [n,n,n,n,n]
         ns=tuple(domain)
        

@@ -1,8 +1,7 @@
-import benchmarks
 from hdmm import workload, templates
 import argparse
 import numpy as np
-import benchmarks
+import benchmarks_marginal
 import pickle
 import os
 import time
@@ -11,7 +10,7 @@ from hdmm.matrix import Identity
 from scipy.sparse import coo_matrix
 import math 
 from hdmm.error import per_query_error,per_query_error_sampling2
-from calculate_variance import calculate_variance, calculate_variance_sampling
+from calculate_variance import calculate_variance, calculate_variance_sampling,calculate_variance_marginal
 
 def get_domain(W):
     if isinstance(W, workload.VStack):
@@ -28,9 +27,9 @@ def default_params():
     """
     params = {}
     params['approx'] = 'True'
-    params['dataset'] = 'adult'
+    params['dataset'] = 'loans'
     params['workload'] = 1
-    params['output'] = 'hderror_2023_04_25_loans.csv'
+    params['output'] = 'hderror_2023_04_27_loans.csv'
 
     return params
 
@@ -48,7 +47,7 @@ if __name__ == '__main__':
 
     approx = args.approx == 'True'
 
-    W = benchmarks.get_workload(args.dataset, args.workload)
+    W = benchmarks_marginal.get_workload(args.dataset, args.workload)
     ns = get_domain(W)
     temp3 = templates.Marginals(ns, approx)
     t0 = time.time()
@@ -56,7 +55,8 @@ if __name__ == '__main__':
     A = temp3.strategy()
 
     #the calculation of v is used function per_query_error_sampling2 from HDMM/error.py
-    v = calculate_variance_sampling(W,A)
+    v = calculate_variance_marginal(W,A)
+    v=np.array(v)
     t1 = time.time()
 
     losses = {}
@@ -67,5 +67,5 @@ if __name__ == '__main__':
     if args.output is not None:
         with open(args.output, 'a') as f:
             for param in losses.keys():
-                key = (args.dataset, args.workload, approx, param, losses[param],t1-t0,v.min())
+                key = (args.dataset, args.workload, approx, param, losses[param],t1-t0,v.max())
                 f.write('%s, %d, %s, %s, %.4f,%.6f,%.6f\n' % key)

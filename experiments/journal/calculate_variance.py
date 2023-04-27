@@ -169,6 +169,7 @@ def calculate_variance_marginal(W, A):
         ans = W.weight**2 * calculate_variance_marginal(W.base, A)
 
     elif isinstance(W, VStack):
+        #WHY? 
         m = W.shape[0]
         samples = [calculate_variance_marginal(Wi, A) for Wi in W.matrices]
         ans = samples

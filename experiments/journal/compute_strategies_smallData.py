@@ -13,7 +13,7 @@ from scipy.sparse.linalg import LinearOperator, eigs,svds
 from hdmm.matrix import Identity
 from scipy.sparse import coo_matrix
 import math 
-from calculate_variance import calculate_variance, calculate_variance_sampling,calculate_variance_numpy
+from calculate_variance import calculate_variance, calculate_variance_sampling,calculate_variance_marginal
 
 def getratio(fileName,dims=[0,1,2,3]):
 
@@ -29,13 +29,14 @@ def getratio(fileName,dims=[0,1,2,3]):
         A.weights = A.weights.astype(np.float32)
         A.dtype = np.float32
   
-        v=calculate_variance_sampling(W,A)
+        v=calculate_variance_marginal(W,A)
+        v=np.array(v)
 
         lossout = np.sqrt(loss / W.shape[0])
         with open(fileName,'a') as f:
-            line = '%d, %.6f, %.6f' % (n, v.min(),lossout)
+            line = '%d, %.6f, %.6f' % (n, v.max(),lossout)
             print(line)
             f.write(line+'\n')
 
 if __name__ == '__main__':
-    getratio("ratio_0424_2.csv")
+    getratio("smallDS_ratio_0427.csv")
